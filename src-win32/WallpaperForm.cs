@@ -75,14 +75,47 @@ public partial class WallpaperForm : Form
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string webPath = Path.Combine(baseDir, "src-web");
 
-            if (!Directory.Exists(webPath))
+            if (!Directory.Exists(webPath) || !File.Exists(Path.Combine(webPath, "index.html")))
             {
-                // Fallback nếu chạy trong thư mục bin/Release/net8.0-windows/
+                // Fallback 1: Thư mục gốc dự án khi chạy trong bin/Release/...
                 string projectWebPath = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "src-web"));
-                if (Directory.Exists(projectWebPath))
+                if (Directory.Exists(projectWebPath) && File.Exists(Path.Combine(projectWebPath, "index.html")))
                 {
                     webPath = projectWebPath;
                 }
+                else
+                {
+                    // Fallback 2: Thư mục cha
+                    string parentWebPath = Path.GetFullPath(Path.Combine(baseDir, "..", "src-web"));
+                    if (Directory.Exists(parentWebPath) && File.Exists(Path.Combine(parentWebPath, "index.html")))
+                    {
+                        webPath = parentWebPath;
+                    }
+                    else
+                    {
+                        // Fallback 3: Tự động trích xuất tài nguyên nhúng ra AppData
+                        string embeddedWebFolder = Path.Combine(localAppData, "EastAsianWallpaper", "src-web");
+                        ExtractEmbeddedWebResources(embeddedWebFolder);
+                        if (Directory.Exists(embeddedWebFolder) && File.Exists(Path.Combine(embeddedWebFolder, "index.html")))
+                        {
+                            webPath = embeddedWebFolder;
+                        }
+                    }
+                }
+            }
+
+            if (!Directory.Exists(webPath) || !File.Exists(Path.Combine(webPath, "index.html")))
+            {
+                MessageBox.Show(
+                    "Không tìm thấy thư mục tài nguyên giao diện 'src-web' của hình nền.\n\n" +
+                    "Cách khắc phục:\n" +
+                    "1. Nếu bạn chạy từ file .zip, hãy nhấp chuột phải chọn 'Extract All...' (Giải nén tất cả) ra một thư mục trước khi mở file .exe.\n" +
+                    "2. Đảm bảo thư mục 'src-web' nằm cùng vị trí với EastAsianWallpaper.exe.",
+                    "East Asian Wallpaper",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+                return;
             }
 
             _webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
@@ -106,6 +139,40 @@ public partial class WallpaperForm : Form
         catch (Exception ex)
         {
             MessageBox.Show($"Lỗi khởi tạo WebView2: {ex.Message}", "East Asian Wallpaper", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private static void ExtractEmbeddedWebResources(string targetFolder)
+    {
+        try
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string prefix = "src-web/";
+            foreach (string resourceName in assembly.GetManifestResourceNames())
+            {
+                string normalized = resourceName.Replace('\\', '/');
+                if (normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    string relativePath = normalized.Substring(prefix.Length).Replace('/', Path.DirectorySeparatorChar);
+                    string targetFilePath = Path.Combine(targetFolder, relativePath);
+                    string? targetDir = Path.GetDirectoryName(targetFilePath);
+                    if (!string.IsNullOrEmpty(targetDir))
+                    {
+                        Directory.CreateDirectory(targetDir);
+                    }
+
+                    using var stream = assembly.GetManifestResourceStream(resourceName);
+                    if (stream != null)
+                    {
+                        using var fileStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                        stream.CopyTo(fileStream);
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Bỏ qua nếu có lỗi quyền ghi
         }
     }
 
