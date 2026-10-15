@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#eee7d7">
+    <meta name="description" content="An endless Chinese landscape, drawn with code. Explore mountains, rivers, and tiny stories, then save your own landscape as SVG.">
+    <title>Shan Shui · An endless landscape</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style/styles.css">
+    <script src="scripts/landscape.js" defer></script>
+    <script src="scripts/app.js" defer></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="identity">
+        <span class="seal" lang="zh" aria-hidden="true">山<br>水</span>
+        <div><h1>Shan Shui</h1><p>An endless landscape</p></div>
+      </div>
+      <nav aria-label="Landscape controls">
+        <button id="settings-toggle" aria-expanded="false" aria-controls="settings">Settings</button>
+        <button id="auto-scroll" aria-pressed="false">Auto-scroll</button>
+        <button id="download">Save SVG <span aria-hidden="true">↓</span></button>
+      </nav>
+    </header>
+    <section id="settings" class="settings" aria-label="Landscape settings" hidden>
+      <form id="seed-form">
+        <label for="seed">Landscape seed</label>
+        <div class="field-row">
+          <input id="seed" name="seed" type="text" autocomplete="off" spellcheck="false" placeholder="A word, a place, a memory…">
+          <button type="submit">Generate</button>
+          <button id="random-seed" type="button">Random</button>
+        </div>
+        <p>The same seed and exploration path recreate the same landscape.</p>
+      </form>
+      <div class="step-setting">
+        <label for="step">Distance per step</label>
+        <input id="step" type="number" min="20" max="2000" step="20" value="200">
+      </div>
+    </section>
+    <main>
+      <div id="landscape" tabindex="0" aria-label="Generated landscape. Drag or swipe to explore, or use the left and right arrow keys." aria-busy="true">
+        <div id="scroll-layer">
+          <svg id="artwork" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="art-title art-description" preserveAspectRatio="xMidYMid meet">
+            <title id="art-title">An endless Shan Shui landscape</title>
+            <desc id="art-description">Procedurally drawn mountains, trees, rivers, and boats inspired by Chinese landscape scrolls.</desc>
+            <g id="drawing"></g>
+          </svg>
+        </div>
+      </div>
+      <div class="journey-controls" aria-label="Explore the landscape">
+        <button id="previous" aria-label="Move left" title="Move left (←)">←</button>
+        <span>Wander a little further</span>
+        <button id="next" aria-label="Move right" title="Move right (→)">→</button>
+      </div>
+      <noscript>This landscape needs JavaScript to draw. Enable JavaScript in your browser to explore it.</noscript>
+    </main>
+    <footer>
+      <p>Drag to explore <span aria-hidden="true">·</span> Use ← → to wander</p>
+      <p>by <a href="https://soumyak4.in">SoumyaK4</a> <span aria-hidden="true">·</span> <a href="https://github.com/SoumyaK4/shan-shui-infinite">Source</a></p>
+    </footer>
+    <p id="status" class="status" role="status">Drawing your landscape…</p>
+  </body>
+</html>

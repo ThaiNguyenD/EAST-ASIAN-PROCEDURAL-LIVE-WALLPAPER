@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sơn Thủy Vô Tận · East Asian Live Wallpaper</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #f4ede2;
+      font-family: "PingFang SC", "Noto Serif SC", "Songti SC", "SimSun", "STSong", serif;
+      color: #2b2623;
+    }
+
+    #wallpaper-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4ede2;
+    }
+
+    #scene-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: #f4ede2;
+    }
+
+    /* Lớp phủ hoa văn giấy dó cổ (Mulberry Rice Paper Texture) */
+    .paper-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.12;
+      mix-blend-mode: multiply;
+      background-image: radial-gradient(#2b2623 0.75px, transparent 0.75px), radial-gradient(#3d352e 0.75px, #f4ede2 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+    }
+
+    /* Bảng điều khiển tối giản (tự ẩn sau 3 giây hoặc khi dùng làm Wallpaper) */
+    #hud-overlay {
+      position: absolute;
+      bottom: 24px;
+      right: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 18px;
+      background: rgba(244, 237, 226, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(61, 53, 46, 0.2);
+      border-radius: 6px;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    #hud-overlay.dimmed {
+      opacity: 0.15;
+    }
+
+    #hud-overlay:hover {
+      opacity: 1.0;
+    }
+
+    .badge-seal {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      text-align: center;
+      background: #a8382c;
+      color: #f4ede2;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 2px;
+    }
+
+    .hud-stat {
+      color: #3d352e;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="wallpaper-container">
+    <svg id="scene-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <!-- Bộ lọc hiệu ứng loang sương khói giấy dó -->
+        <filter id="paper-mist" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" />
+        </filter>
+        <!-- Bộ lọc kết cấu mực thẩm thấu -->
+        <filter id="ink-bleed" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+
+      <!-- Nhóm chứa các chunk phong cảnh (Tier 1 tịnh tiến & dọn rác DOM tại đây) -->
+      <g id="scene-drawing"></g>
+    </svg>
+    <div class="paper-overlay" aria-hidden="true"></div>
+  </div>
+
+  <div id="hud-overlay" class="dimmed">
+    <span class="badge-seal">水</span>
+    <span class="hud-stat" id="stat-fps">120 FPS</span>
+    <span style="opacity: 0.4;">|</span>
+    <span class="hud-stat" id="stat-nodes">Nodes: 0</span>
+    <span style="opacity: 0.4;">|</span>
+    <span class="hud-stat" id="stat-scroll">0.5 px/frame</span>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

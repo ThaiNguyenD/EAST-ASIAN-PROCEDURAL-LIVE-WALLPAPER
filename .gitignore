@@ -1,0 +1,29 @@
+# .NET / Visual Studio build artifacts
+**/[Bb]in/
+**/[Oo]bj/
+publish/
+publish_singlefile/
+release/
+dist/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+# WebView2 User Data Cache
+**/WebView2Data/
+**/runtimes/
+
+# Temporary / Log files
+*.log
+*.tmp
+Thumbs.db
+.DS_Store
+
+# Keep preview image and test scripts
+!preview.png
+
+# Workflows (ignored if pushing without workflow scope)
+.github/
